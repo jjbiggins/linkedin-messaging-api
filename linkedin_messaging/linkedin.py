@@ -63,7 +63,7 @@ T = TypeVar("T", bound=DataClassJsonMixin)
 
 
 async def try_from_json(deserialise_to: T, response: aiohttp.ClientResponse) -> T:
-    if response.status < 200 or 300 <= response.status:
+    if response.status < 200 or response.status >= 300:
         try:
             error = Error.from_json(await response.text())
         except:
@@ -389,11 +389,10 @@ class LinkedInMessaging:
 
     async def delete_message(self, conversation_urn: URN, message_urn: URN) -> bool:
         res = await self._post(
-            "/messaging/conversations/{}/events/{}".format(
-                conversation_urn, message_urn.id_parts[-1]
-            ),
+            f"/messaging/conversations/{conversation_urn}/events/{message_urn.id_parts[-1]}",
             params={"action": "recall"},
         )
+
         return res.status == 204
 
     async def download_linkedin_media(self, url: str) -> bytes:
@@ -413,12 +412,11 @@ class LinkedInMessaging:
         emoji: str,
     ) -> bool:
         res = await self._post(
-            "/messaging/conversations/{}/events/{}".format(
-                conversation_urn, message_urn.id_parts[-1]
-            ),
+            f"/messaging/conversations/{conversation_urn}/events/{message_urn.id_parts[-1]}",
             params={"action": "reactWithEmoji"},
             json={"emoji": emoji},
         )
+
         return res.status == 204
 
     async def remove_emoji_reaction(
@@ -428,12 +426,11 @@ class LinkedInMessaging:
         emoji: str,
     ) -> bool:
         res = await self._post(
-            "/messaging/conversations/{}/events/{}".format(
-                conversation_urn, message_urn.id_parts[-1]
-            ),
+            f"/messaging/conversations/{conversation_urn}/events/{message_urn.id_parts[-1]}",
             params={"action": "unreactWithEmoji"},
             json={"emoji": emoji},
         )
+
         return res.status == 204
 
     async def get_reactors(self, message_urn: URN, emoji: str) -> ReactorsResponse:
