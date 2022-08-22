@@ -20,18 +20,13 @@ class URN:
         return ",".join(self.id_parts)
 
     def __str__(self) -> str:
-        return "{}:{}".format(
-            self.prefix,
-            (self.id_parts[0] if len(self.id_parts) == 1 else f"({self.id_str()})"),
-        )
+        return f'{self.prefix}:{self.id_parts[0] if len(self.id_parts) == 1 else f"({self.id_str()})"}'
 
     def __hash__(self) -> int:
         return hash(self.id_str())
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, URN):
-            return False
-        return self.id_parts == other.id_parts
+        return self.id_parts == other.id_parts if isinstance(other, URN) else False
 
     def __repr__(self) -> str:
         return f"URN('{str(self)}')"
